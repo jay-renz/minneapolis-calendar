@@ -5,8 +5,5 @@ __pycache__/
 .venv
 .venv/
 
-# local data and outputs
-/public/
-
 # editor
 .vscode/
