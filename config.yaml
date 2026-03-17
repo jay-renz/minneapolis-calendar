@@ -1,0 +1,3 @@
+# Configuration for generator
+# timezone: IANA timezone name (default America/Chicago)
+timezone: America/Chicago
