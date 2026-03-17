@@ -2,9 +2,12 @@ name: Generate ICS Calendar
 
 on:
   schedule:
-    # Runs daily at 06:00 UTC
     - cron: '0 6 * * *'
   workflow_dispatch: {}
+
+permissions:
+  pages: write
+  id-token: write
 
 jobs:
   build:
@@ -19,9 +22,10 @@ jobs:
         run: pip install -r requirements.txt
       - name: Generate ICS
         run: python generate_calendar.py --input data/meetings.csv --output public/minneapolis_stpaul_meetings.ics
-      - name: Publish to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
+          path: 'public/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
