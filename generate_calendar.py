@@ -30,6 +30,13 @@ DEFAULT_TZ = 'America/Chicago'
 def extract_time(text):
     if not text:
         return None
+    text_l = (text or '').lower()
+    # check for "afternoon" or "evening"
+    if 'afternoon' in text_l:
+        return time(hour=15, minute=0)  # 3pm
+    if 'evening' in text_l or 'eve' in text_l:
+        return time(hour=17, minute=0)  # 5pm
+    # check for explicit time like 9:30am or 1:30pm
     m = re.search(r'(?P<h>\d{1,2})(?::(?P<M>\d{2}))?\s*(?P<ampm>am|pm)', text, flags=re.I)
     if m:
         h = int(m.group('h'))
@@ -175,7 +182,10 @@ def main():
         reader = csv.DictReader(fh)
         for row in reader:
             name = row.get('Agency') or row.get('meeting_name') or row.get('Description')
-            cadence = row.get('Cadence') or row.get('Est. annual meetings') or ''
+            cadence = row.get('Cadence') or ''
+            # Skip rows with no cadence (can't infer schedule)
+            if not cadence or not cadence.strip():
+                continue
             info_link = row.get('Info link') or row.get('Info') or row.get('InfoLink')
             cal_link = row.get('Calendar link') or row.get('Calendar link')
             agenda_link = row.get('Agenda link')
